@@ -177,4 +177,38 @@ namespace AppDev.Controllers
               return Json(new { success = false, message = "Item not found." });
           }
   */
+   [HttpPost]
+        public async Task<IActionResult> UpdateQuantity(int itemId, int newQuantity)
+        {
+            if (itemId <= 0 || newQuantity <= 0)
+                return RedirectToAction("Index", "Cart"); // Không thay đổi và chuyển hướng trở lại trang giỏ hàng
+
+            var item = await context.CartItems
+                .FirstOrDefaultAsync(ci => ci.CustomerId == CustomerId && ci.BookId == itemId);
+
+            if (item != null)
+            {
+                item.Quantity = newQuantity;
+                await context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index", "Cart"); // Chuyển hướng trở lại trang giỏ hàng
+        }
+
+        public async Task<IActionResult> RemoveItem(int? bookId)
+        {
+            if (bookId == null)
+                return BadRequest();
+
+            var item = await context.CartItems
+                .FirstOrDefaultAsync(ci => ci.CustomerId == CustomerId && ci.BookId == bookId);
+
+            if (item == null)
+                return Ok();
+
+            context.CartItems.Remove(item);
+            await context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Cart"); // Chuyển hướng trang đến trang giỏ hàng sau khi xóa
+        }
   
