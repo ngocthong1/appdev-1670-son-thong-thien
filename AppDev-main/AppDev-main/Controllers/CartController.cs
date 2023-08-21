@@ -211,4 +211,49 @@ namespace AppDev.Controllers
 
             return RedirectToAction("Index", "Cart"); // Chuyển hướng trang đến trang giỏ hàng sau khi xóa
         }
+           public async Task<IActionResult> RemoveItem(int? bookId)
+        {
+            if (bookId == null)
+                return BadRequest();
+
+            var item = await context.CartItems
+                .FirstOrDefaultAsync(ci => ci.CustomerId == CustomerId && ci.BookId == bookId);
+
+            if (item == null)
+                return Ok();
+
+            context.CartItems.Remove(item);
+            await context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Cart"); // Chuyển hướng trang đến trang giỏ hàng sau khi xóa
+        }
+
+
+        /*       public async Task<IActionResult> RemoveItem(int? bookId, int? quantity)
+               {
+                   if (bookId == null || quantity <= 0)
+                       return BadRequest();
+
+                   var item = await context.CartItems
+                       .FirstOrDefaultAsync(ci => ci.CustomerId == CustomerId && ci.BookId == bookId);
+
+                   if (item == null)
+                       return Ok();
+
+                   if (quantity == null)
+                   {
+                       context.CartItems.Remove(item);
+                   }
+                   else
+                   {
+                       if (item.Quantity > quantity)
+                           item.Quantity -= quantity.Value;
+                       else item.Quantity = 1;
+                   }
+                   await context.SaveChangesAsync();
+
+                   return Ok(item);
+               }*/
+    }
+}
   
